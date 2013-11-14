@@ -1,1 +1,3 @@
 # modified [![NPM version](https://badge.fury.io/js/modified.png)](http://badge.fury.io/js/modified) [![Build Status](https://travis-ci.org/kaelzhang/node-modified.png?branch=master)](https://travis-ci.org/kaelzhang/node-modified) [![Dependency Status](https://gemnasium.com/kaelzhang/node-modified.png)](https://gemnasium.com/kaelzhang/node-modified)
+
+Modified is a simple request client to deal with http local cache based on JSON. Modified implemented 
