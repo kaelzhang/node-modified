@@ -55,9 +55,7 @@ Modified.prototype.request = function(options, callback) {
     var self = this;
 
     if ( !options.method || options.method.toLowerCase() !== 'get' ) {
-        request(options, callback);
-
-        return;
+        return request(options, callback);
     }
 
     this._read(options, function (read_err, headers, data) {
@@ -80,19 +78,24 @@ Modified.prototype.request = function(options, callback) {
             delete options.headers[IF_MODIFIED_SINCE];
         }
 
-        request(options, function (err, res, body) {
-            if ( err ) {
-                return callback(err, res, body);
-            }
+        if ( callback ) {
+            request(options, function (err, res, body) {
+                if ( err ) {
+                    return callback(err, res, body);
+                }
 
-            if ( res.statusCode === 304 ) {
-                return callback(err, res, data || body);
-            }
+                if ( res.statusCode === 304 ) {
+                    return callback(err, res, data || body);
+                }
 
-            self._save(options, res.headers, body, function (save_err) {
-                callback(err, res, body);
+                self._save(options, res.headers, body, function (save_err) {
+                    callback(err, res, body);
+                });
             });
-        });
+        
+        } else {
+            request(options);
+        }
     });
 };
 
