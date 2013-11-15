@@ -1,3 +1,5 @@
+*.cache
+
 # Cortex project
 build/
 
