@@ -15,7 +15,7 @@ function modified (options) {
 function Modified (options) {
     // you can also inherit and override 'read' and 'save' methods
     ['read', 'save', 'route'].forEach(function (key) {
-        if ( key in options ) {
+        if ( options[key] ) {
             this['_' + key] = options[key];
         }
 
