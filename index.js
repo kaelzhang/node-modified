@@ -15,7 +15,6 @@ function modified (options) {
 
 
 // @param {Object} options
-// - strict: {boolean} if true
 function Modified (options) {
     // you can also inherit and override 'read' and 'save' methods
     ['read', 'save', 'route'].forEach(function (key) {
@@ -39,7 +38,7 @@ function mix (receiver, supplier, override){
 
     for(key in supplier){
         if(override || !(key in receiver)){
-            receiver[key] = supplier[key]
+            receiver[key] = supplier[key];
         }
     }
 
@@ -66,10 +65,6 @@ Modified.prototype.request = function(options, callback) {
     }
 
     this._read(options, function (read_err, headers, data) {
-        // if ( err && self.options.strict ) {
-        //     return callback(err, data);
-        // }
-
         if ( !options.headers ) {
             options.headers = {};
         }
@@ -171,7 +166,11 @@ Modified.prototype._parse = function(content) {
         };
     }
 
-    var splitted = content.split(/(\r)?\n(\r)?\n/);
+    var splitted = content.split(/\n+/)
+        .filter(Boolean)
+        .map(function (item) {
+            return item.trim();
+        });
 
     return {
         headers: JSON.parse(splitted[0]),
