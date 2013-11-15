@@ -22,7 +22,7 @@ If your server supports etag, or checks the `if-modified-since` header, `modifie
 
 ### Specify the cache routing
 
-`options.route` must be specified, or an error will be thrown.
+`options.route` must be specified, or there will be no cache applied.
 
 ```
 modified({

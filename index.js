@@ -155,7 +155,8 @@ Modified.prototype._save = function(options, headers, data, callback) {
 
 
 Modified.prototype._route = function (options, callback) {
-    throw new Error('You must implement this method.');
+    // no cache by default
+    callback(null);
 };
 
 
