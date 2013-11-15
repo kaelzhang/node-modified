@@ -3,10 +3,7 @@
 module.exports = modified;
 modified.Modified = Modified;
 
-var node_fs     = require('fs');
-// var EE          = require('events').EventEmitter;
-// var node_util   = require('util');
-
+var fs          = require('fs-sync');
 var request     = require('request');
 
 function modified (options) {
@@ -27,7 +24,6 @@ function Modified (options) {
     this.options = options;
 }
 
-// node_util.inherits(Modified, EE);
 
 function mix (receiver, supplier, override){
     var key;
@@ -117,15 +113,16 @@ Modified.prototype._read = function(options, callback) {
             return callback(null);
         }
 
-        node_fs.readFile(file, function (err, content) {
-            if ( err ) {
-                return callback(err);
-            }
+        var content;
 
-            var info = self._parse(content.toString());
+        try {
+            content = fs.read(file);
+        } catch(e) {
+            return callback(e);
+        }
 
-            callback(null, info.headers, info.data);
-        });
+        var info = modified.parse(content.toString());
+        callback(null, info.headers, info.data);
     });
 };
 
@@ -145,11 +142,14 @@ Modified.prototype._save = function(options, headers, data, callback) {
             return callback(null);
         }
 
-        var cache = self._stringify(headers, data);
+        var cache = modified.stringify(headers, data);
 
-        node_fs.writeFile(file, cache, function (err) {
-            callback(err);
-        });
+        try {
+            fs.write(file, cache);
+            callback(null);
+        } catch(e) {
+            callback(e);
+        }
     });
 };
 
@@ -159,7 +159,7 @@ Modified.prototype._route = function (options, callback) {
 };
 
 
-Modified.prototype._parse = function(content) {
+modified.parse = function(content) {
     if ( !content ) {
         return {
             headers: {}
@@ -179,7 +179,7 @@ Modified.prototype._parse = function(content) {
 };
 
 
-Modified.prototype._stringify = function (headers, data) {
+modified.stringify = function (headers, data) {
     return [headers, data].map(function (item) {
         return typeof item === 'string' ?
             item :
