@@ -24,7 +24,7 @@ If your server supports etag, or checks the `if-modified-since` header, `modifie
 
 `options.route` must be specified, or there will be no cache applied.
 
-```
+```js
 modified({
 	route: function(options, callback){
 		// your code...
@@ -45,7 +45,7 @@ type `String` the file path of the local cache according to a specific request.
 
 If you don't want modified to cache for a certain request, `cache_file` should be set to `null`
 
-```
+```js
 {
 	route: function(options, callback){
 		var path = url.parse(options.url).pathname;
