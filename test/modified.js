@@ -67,11 +67,25 @@ describe("complex", function(){
             url: 'http://localhost:' + server_port
 
         }, function (err, res, body) {
-            done();
+            // done();
             expect(res.statusCode).to.equal(200);
 
             var json = JSON.parse(body);
             expect(json.a).to.equal(1);
+
+            request.request({
+                method: 'GET',
+                url: 'http://localhost:' + server_port
+
+            }, function (err, res, body) {
+                done();
+                expect(res.statusCode).to.equal(304);
+
+                var json = JSON.parse(body);
+                expect(json.a).to.equal(1);
+                
+                fs.remove(cache_file_1);
+            });
             
         });
     });
@@ -85,7 +99,7 @@ describe("complex", function(){
 
         fs.write(
             cache_file_2, 
-            request._stringify({
+            modified.stringify({
                 etag: ETAG
             }, {
                 a: 3,
@@ -104,6 +118,8 @@ describe("complex", function(){
 
             var json = JSON.parse(body);
             expect(json.a).to.equal(3);
+
+            fs.remove(cache_file_2);
         });
     });
 });
