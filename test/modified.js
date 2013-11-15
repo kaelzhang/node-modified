@@ -57,7 +57,7 @@ describe("complex", function(){
         fs.remove(cache_file_1);
 
         var request = modified({
-            route: function (options, callback) {
+            cacheMapper: function (options, callback) {
                 callback(null, cache_file_1 );
             }
         });
@@ -92,7 +92,7 @@ describe("complex", function(){
 
     it("will get statusCode 304 when already cached", function(done){
         var request = modified({
-            route: function (options, callback) {
+            cacheMapper: function (options, callback) {
                 callback(null, cache_file_2 );
             }
         });

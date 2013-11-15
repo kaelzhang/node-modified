@@ -14,7 +14,7 @@ function modified (options) {
 // @param {Object} options
 function Modified (options) {
     // you can also inherit and override 'read' and 'save' methods
-    ['read', 'save', 'route'].forEach(function (key) {
+    ['read', 'save', 'cacheMapper'].forEach(function (key) {
         if ( options[key] ) {
             this['_' + key] = options[key];
         }
@@ -107,7 +107,7 @@ Modified.prototype.request = function(options, callback) {
 Modified.prototype._read = function(options, callback) {
     var self = this;
 
-    this._route(options, function (err, file) {
+    this._cacheMapper(options, function (err, file) {
         if ( err ) {
             return callback(err);
         }
@@ -136,7 +136,7 @@ Modified.prototype._read = function(options, callback) {
 Modified.prototype._save = function(options, headers, data, callback) {
     var self = this;
 
-    this._route(options, function (err, file) {
+    this._cacheMapper(options, function (err, file) {
         if ( err ) {
             return callback(err);
         }
@@ -157,7 +157,7 @@ Modified.prototype._save = function(options, headers, data, callback) {
 };
 
 
-Modified.prototype._route = function (options, callback) {
+Modified.prototype._cacheMapper = function (options, callback) {
     // no cache by default
     callback(null);
 };
