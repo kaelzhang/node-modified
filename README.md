@@ -22,11 +22,11 @@ If your server supports etag, or checks the `if-modified-since` header, `modifie
 
 ### Specify the cache routing
 
-`options.route` must be specified, or there will be no cache applied.
+`options.cacheMapper` must be specified, or there will be no cache applied.
 
 ```js
 modified({
-	route: function(options, callback){
+	cacheMapper: function(options, callback){
 		// your code...
 		callback(err, cache_file);
 	}
@@ -47,7 +47,7 @@ If you don't want modified to cache for a certain request, `cache_file` should b
 
 ```js
 {
-	route: function(options, callback){
+	cacheMapper: function(options, callback){
 		var path = url.parse(options.url).pathname;
 		
 		if (path) {
