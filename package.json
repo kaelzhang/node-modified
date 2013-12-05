@@ -1,6 +1,6 @@
 {
   "name": "modified",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Modified is a simple request client to deal with http local caches.",
   "main": "index.js",
   "scripts": {
@@ -8,13 +8,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/kaelzhang/node-checker.git"
+    "url": "git://github.com/kaelzhang/node-modified.git"
   },
   "keywords": [
-    "checker",
-    "validator",
-    "validate",
-    "setter"
+    "modified",
+    "http",
+    "request",
+    "last-modified",
+    "if-modified-since",
+    "etag",
+    "if-none-match",
+    "304"
   ],
   "engines": {
     "node": ">=0.8.0"
@@ -22,7 +26,7 @@
   "author": "kael",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/kaelzhang/node-checker/issues"
+    "url": "https://github.com/kaelzhang/node-modified/issues"
   },
   "devDependencies": {
     "mocha": "~1.13.0",
