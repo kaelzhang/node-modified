@@ -125,3 +125,28 @@ describe("complex", function(){
 });
 
 
+describe("static methods", function(){
+    it("modified.parse", function(){
+        var parsed = modified.parse(fs.read( node_path.join(__dirname, 'fixtures', 'document.cache') ));
+
+        expect(parsed.headers.server).to.equal('nginx');
+        expect(JSON.parse(parsed.data).id).to.equal(123);
+    });
+
+    describe("modified.strinify", function(){
+        it("will stringify objects", function(){
+            var h = {a: 1};
+            var d = {b: '2'}
+
+            expect(modified.stringify(h, d)).to.equal('{"a":1}\n\n{"b":"2"}');
+        });
+
+        it("will remain primitive literals", function(){
+            var h = {a: 1};
+            var d = 2;
+
+            expect(modified.stringify(h, d)).to.equal('{"a":1}\n\n2');
+        });
+    });
+});
+
