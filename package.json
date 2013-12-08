@@ -1,6 +1,6 @@
 {
   "name": "modified",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Modified is a simple request client to deal with http local caches.",
   "main": "index.js",
   "scripts": {
@@ -34,7 +34,7 @@
     "fs-sync": "~0.2.4"
   },
   "dependencies": {
-    "request": "~2.27.0",
+    "request": "~2.29.0",
     "fs-sync": "~0.2.4"
   }
 }
