@@ -127,7 +127,7 @@ describe("complex", function(){
 
 describe("static methods", function(){
     it("modified.parse", function(){
-        var parsed = modified.parse(fs.read( node_path.join(__dirname, 'fixtures', 'document.cache') ));
+        var parsed = modified.parse(fs.read( node_path.join(__dirname, 'fixtures', 'document.data') ));
 
         expect(parsed.headers.server).to.equal('nginx');
         expect(JSON.parse(parsed.data).id).to.equal(123);
