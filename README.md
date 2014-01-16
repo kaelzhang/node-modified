@@ -3,10 +3,6 @@
 Modified is a simple request client to deal with http local cache based on JSON. 
 
 Modified implemented `last-modified`, `if-modified-since`, `etag`, `if-none-match` of HTTP specifications.
-
-## Installation
-
-	npm install modified --save
 	
 ## Synopsis
 
