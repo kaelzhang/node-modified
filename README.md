@@ -4,16 +4,19 @@ Modified is a simple request client to deal with http local cache based on JSON.
 
 Modified implemented `last-modified`, `if-modified-since`, `etag`, `if-none-match` of HTTP specifications.
 
-Modified only gives `'GET'` request a special treatment, and leaves other types of requests without cache.
-
 ## Installation
 
 	npm install modified --save
 	
 ## Synopsis
 
+Modified is build upon [request](https://npmjs.org/package/request) and flavors it with cache support, so if you are familiar with request, you are almost ready to use modified.
+
 ```js
-modified(options).request(options, callback);
+var request = modified(options);
+// then use almost the same as request
+
+request('http://google.com/doodle.png').pipe(fs.createWriteStream('doodle.png'));
 ```
 
 ## Usage
@@ -52,7 +55,7 @@ If you don't want modified to cache for a certain request, `cache_file` should b
 		
 		if (path) {
 			// 'http://xxx.com/abc/' -> '/abc'
-			path = path.replace(/\/$/);
+			path = path.replace(/\/$/, '');
 			
 			callback(null, path.join(__dirname, 'cache', path));
 		
@@ -62,6 +65,14 @@ If you don't want modified to cache for a certain request, `cache_file` should b
 	}
 }
 ```
+
+With `options.cacheMapper`, you could specify the paths where the cache will be saved.
+
+## Release History
+
+* 1.1.0 - Modified instances are streams now. You can use modified to fetch binary files.
+
+* 1.0.0 - Initial release
 
 
 
