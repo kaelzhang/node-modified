@@ -1,18 +1,19 @@
 'use strict';
 
-module.exports = modified;
-modified.Modified = Modified;
+module.exports = Modified;
 
-var fs          = require('fs-sync');
+var fs          = require('fs');
 var request     = require('request');
-
-function modified (options) {
-    return new Modified(options || {});
-}
+var Stream      = require('stream').Stream;
+var util        = require('util');
+var node_path   = require('path');
 
 
 // @param {Object} options
 function Modified (options) {
+    Stream.call(this);
+    options = options || {};
+
     // you can also inherit and override 'read' and 'save' methods
     ['read', 'save', 'cacheMapper'].forEach(function (key) {
         if ( options[key] ) {
@@ -22,24 +23,10 @@ function Modified (options) {
     }, this);
 
     this.options = options;
+    this._pipeQueue = [];
 }
 
-
-function mix (receiver, supplier, override){
-    var key;
-
-    if(arguments.length === 2){
-        override = true;
-    }
-
-    for(key in supplier){
-        if(override || !(key in receiver)){
-            receiver[key] = supplier[key];
-        }
-    }
-
-    return receiver;
-}
+util.inherits(Modified, Stream);
 
 
 // Accoring to [RFC 2616](http://www.ietf.org/rfc/rfc2616.txt),
@@ -53,10 +40,6 @@ var IF_MODIFIED_SINCE = 'if-modified-since';
 
 Modified.prototype.request = function(options, callback) {
     var self = this;
-
-    if ( !options.method || options.method.toLowerCase() !== 'get' ) {
-        return request(options, callback);
-    }
 
     this._read(options, function (read_err, headers, data) {
         if ( !options.headers ) {
@@ -97,6 +80,9 @@ Modified.prototype.request = function(options, callback) {
             request(options);
         }
     });
+
+    // So, modified.request is a stream
+    return this;
 };
 
 
@@ -107,7 +93,7 @@ Modified.prototype.request = function(options, callback) {
 Modified.prototype._read = function(options, callback) {
     var self = this;
 
-    this._cacheMapper(options, function (err, file) {
+    this._mapCache(options, function (err, file) {
         if ( err ) {
             return callback(err);
         }
@@ -136,7 +122,7 @@ Modified.prototype._read = function(options, callback) {
 Modified.prototype._save = function(options, headers, data, callback) {
     var self = this;
 
-    this._cacheMapper(options, function (err, file) {
+    this._mapCache(options, function (err, file) {
         if ( err ) {
             return callback(err);
         }
@@ -157,39 +143,65 @@ Modified.prototype._save = function(options, headers, data, callback) {
 };
 
 
+// Get the path of the cached binary file
+Modified.prototype._getFilePath = function(filepath, url) {
+    var dir = node_path.dirname(filepath);
+    var basename = node_path.basename(url);
+
+    return node_path.join(dir, basename);
+};
+
+
+Modified.prototype.pipe = function(dest, options) {
+    if ( this._response ) {
+        // method of parent class
+        this._pipe(dest, options);
+
+    } else {
+        this._pipeQueue.push({
+            dest: dest,
+            options: options
+        });
+    }
+
+    // Returns destination stream, so that we can set pipe chains
+    return dest;
+};
+
+
+Modified.prototype._pipe = function(dest, options) {
+    Stream.prototype.pipe.call(this, dest, options);
+};
+
+
+Modified.prototype._applyQueue = function() {
+    this._pipeQueue.forEach(function (data) {
+        this._pipe(data.dest, data.options);
+    }, this);
+};
+
+
+// Map the requested url -> the path where cache should be save
+Modified.prototype._mapCache = function(options, callback) {
+    if ( this._cacheMapper ) {
+        this._cacheMapper(options, callback);
+
+    } else {
+
+        // Disable cache
+        // ```
+        // Modified({
+        //     cacheMapper: null
+        // });
+        // ```
+        callback(null);
+    }
+};
+
+
 Modified.prototype._cacheMapper = function (options, callback) {
     // no cache by default
     callback(null);
-};
-
-
-modified.parse = function(content) {
-    if ( !content ) {
-        return {
-            headers: {}
-        };
-    }
-
-    var splitted = content.split(/\n+/)
-        .filter(Boolean)
-        .map(function (item) {
-            return item.trim();
-        });
-
-    return {
-        headers: JSON.parse(splitted[0]),
-        data: splitted[1]
-    };
-};
-
-
-modified.stringify = function (headers, data) {
-    return [headers, data].map(function (item) {
-        return typeof item === 'string' ?
-            item :
-            JSON.stringify(item);
-
-    }).join('\n\n');
 };
 
 
