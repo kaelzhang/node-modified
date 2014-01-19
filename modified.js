@@ -172,19 +172,19 @@ Modified.prototype._readCacheInfo = function(options, callback) {
             return callback(null);
         }
 
-        var data_file = self._getDataPath(file);
+        var header_file = self._getHeaderPath(file);
         var file_content;
 
         async.parallel([
             function (done) {
-                fs.readFile(file, function (err, content) {
+                fs.readFile(header_file, function (err, content) {
                     file_content = content;
                     done(err);
                 });
             },
 
             function (done) {
-                fs.exists(data_file, function (exists) {
+                fs.exists(file, function (exists) {
                     done(!exists);
                 });
             }
@@ -209,8 +209,8 @@ Modified.prototype._readCacheInfo = function(options, callback) {
 
             callback(null, {
                 headers     : headers,
-                data_file   : data_file,
-                header_file : file,
+                data_file   : file,
+                header_file : header_file,
                 dir         : node_path.dirname(file)
             });
         });
@@ -219,8 +219,8 @@ Modified.prototype._readCacheInfo = function(options, callback) {
 
 
 // Get the path of the cached binary file
-Modified.prototype._getDataPath = function(filepath) {
-    return filepath + '.cached-data';
+Modified.prototype._getHeaderPath = function(filepath) {
+    return filepath + '.modified-headers.json';
 };
 
 

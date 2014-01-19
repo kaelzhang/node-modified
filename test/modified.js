@@ -94,7 +94,7 @@ describe("complex", function(){
                 expect(json.a).to.equal(1);
                 
                 fs.remove(cache_file_1);
-                fs.remove(cache_file_1 + '.cached-data');
+                fs.remove(cache_file_1 + '.modified-headers.json');
                 done();
             });
         });
@@ -107,17 +107,17 @@ describe("complex", function(){
             }
         });
 
-        var cached_data = cache_file_2 + '.cached-data';
+        var cached_header = cache_file_2 + '.modified-headers.json';
 
         fs.write(
-            cache_file_2, 
+            cached_header, 
             JSON.stringify({
                 etag: ETAG
             })
         );
 
         fs.write(
-            cached_data,
+            cache_file_2,
             JSON.stringify({
                 a: 3
             })
@@ -132,7 +132,7 @@ describe("complex", function(){
             expect(json.a).to.equal(3);
 
             fs.remove(cache_file_2);
-            fs.remove(cached_data);
+            fs.remove(cached_header);
         });
     });
 });
@@ -155,7 +155,7 @@ describe(".pipe()", function(){
         req.on('complete', function () {
             expect(fs.read(pipe_to)).to.equal('{"a":1,"b":2}');
             fs.remove(cache_file_3);
-            fs.remove(cache_file_3 + '.cached-data');
+            fs.remove(cache_file_3 + '.modified-headers.json');
             fs.remove(pipe_to);
             done();
         })
