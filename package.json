@@ -13,6 +13,7 @@
   "keywords": [
     "modified",
     "http",
+    "client",
     "request",
     "last-modified",
     "if-modified-since",
