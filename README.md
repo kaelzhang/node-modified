@@ -9,6 +9,7 @@ Modified implemented `last-modified`, `if-modified-since`, `etag`, `if-none-matc
 Modified is built upon [request](https://npmjs.org/package/request) and flavors it with cache support, so if you are familiar with request, you are almost ready to use modified.
 
 ```js
+var modified = require('modified');
 var request = modified(options); // Then use it almost the same as request
 
 request('http://google.com/doodle.png').pipe(fs.createWriteStream('doodle.png'));

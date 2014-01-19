@@ -144,5 +144,16 @@ describe(".pipe()", function(){
             done();
         })
     });
+
+    it("google logo", function(done){
+        var url = 'http://www.google.com.hk/images/srpr/logo11w.png';
+        var request = modified();
+        var req = request(url);
+
+        req.pipe(node_fs.createWriteStream( 'logo.png' ));
+        req.on('complete', function (res) {
+            done();
+        });
+    });
 });
 
