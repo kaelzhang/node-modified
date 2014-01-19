@@ -11,7 +11,7 @@ function modified(options) {
         return req.get(uri, options, callback);
     };
 
-    req._options = options;
+    req._options = options || {};
     req.__proto__ = Ghost.prototype;
 
     return req;
@@ -52,10 +52,11 @@ Ghost.prototype._initParams = function(uri, options, callback) {
     var opts = this.initParams(uri, options, callback);
     var opts_options = opts.options;
     var self = this;
+    var modified_options = self._options;
 
     Modified.OPTIONS_LIST.forEach(function(key) {
-        if (!(key in opts_options)) {
-            opts_options[key] = self._options[key];
+        if (!(key in opts_options) && (key in modified_options)) {
+            opts_options[key] = modified_options[key];
         }
     });
 
