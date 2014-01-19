@@ -7,8 +7,12 @@ var request     = require('request');
 var Stream      = require('stream').Stream;
 var util        = require('util');
 var node_path   = require('path');
+var node_url    = require('url');
 
 var async       = require('async');
+var mkdirp      = require('mkdirp');
+
+var USER_HOME   = process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'];
 
 // @param {Object} options
 function Modified (options) {
@@ -128,6 +132,10 @@ Modified.prototype._sendResponseBody = function(res, file, callback) {
 Modified.prototype._saveResponse = function(res, body, info, callback) {
     async.parallel([
         function (done) {
+            mkdirp(info.dir, done);
+        },
+
+        function (done) {
             fs.writeFile(info.data_file, body, done)
         },
 
@@ -195,9 +203,10 @@ Modified.prototype._readCacheInfo = function(options, callback) {
             }
 
             callback(null, {
-                headers: headers,
-                data_file: data_file,
-                header_file: file
+                headers     : headers,
+                data_file   : data_file,
+                header_file : file,
+                dir         : node_path.dirname(file)
             });
         });
     });
@@ -241,7 +250,22 @@ Modified.prototype._mapCache = function(options, callback) {
 
 Modified.prototype._cacheMapper = function (options, callback) {
     // no cache by default
-    callback(null);
+    var url = node_url.parse(options.uri);
+    var filepath = [
+        '.node_modified', 
+        url.protocol && url.protocol.replace(/:$/, '') || 'unknown',
+        // 'user:pass' -> 'user%3Apass'
+        url.auth,
+        url.hostname,
+        url.port,
+        url.pathname,
+        url.query
+    ]
+    .filter(Boolean)
+    .map(encodeURIComponent)
+    .join(node_path.sep);
+
+    callback(null, node_path.join(USER_HOME, filepath) );
 };
 
 
