@@ -6,7 +6,7 @@ Modified implemented `last-modified`, `if-modified-since`, `etag`, `if-none-matc
 	
 ## Synopsis
 
-Modified is build upon [request](https://npmjs.org/package/request) and flavors it with cache support, so if you are familiar with request, you are almost ready to use modified.
+Modified is built upon [request](https://npmjs.org/package/request) and flavors it with cache support, so if you are familiar with request, you are almost ready to use modified.
 
 ```js
 var request = modified(options); // Then use almost the same as request
@@ -79,7 +79,7 @@ A instance of `Modified` is an [EventEmitter](http://nodejs.org/api/events.html#
 
 #### Event: 'complete'
 
-- response `[http.ServerResponse](http://nodejs.org/api/http.html#http_class_http_serverresponse)` The response object
+- response [`http.ServerResponse`](http://nodejs.org/api/http.html#http_class_http_serverresponse) The response object
 - body `String` The response body
 
 Emitted when all the request process is complete, after the execution of user callback.
@@ -88,8 +88,8 @@ Emitted when all the request process is complete, after the execution of user ca
 
 Send a request.
 
-- options `Object` The same as `[request](https://npmjs.org/package/request)`
-- callback `Function` The same as `[request](https://npmjs.org/package/request)`
+- options `Object` The same as [`request`](https://npmjs.org/package/request)
+- callback `Function` The same as [`request`](https://npmjs.org/package/request)
 
 
 ## Release History
