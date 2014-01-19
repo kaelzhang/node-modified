@@ -5,13 +5,16 @@ var modified = require('../');
 
 var node_path = require('path');
 var node_http = require('http');
+var node_url = require('url');
 var node_fs = require('fs');
+var async = require('async');
 
 var fs = require('fs-sync');
 
 var cache_file_1 = node_path.join( __dirname, '1.cache' );
 var cache_file_2 = node_path.join( __dirname, '2.cache' );
 var cache_file_3 = node_path.join( __dirname, '3.cache' );
+var source_png = node_path.join( __dirname, 'fixtures', 'modified.png' );
 
 // Fake etag
 var ETAG = String( Math.random() * 1000000 );
@@ -26,15 +29,28 @@ var s = node_http.createServer(function (req, res) {
             'Etag': ETAG
         });
         
+        res.end();
+
     } else {
         res.writeHead(200, {
             Etag: ETAG
         });
 
-        res.write(JSON.stringify(RESPONSE));
-    }
+        var url = node_url.parse(req.url);
 
-    res.end();
+        if ( url.pathname === '/modified.png' ) {
+            var stream = node_fs.createReadStream( source_png );
+            stream.pipe(res);
+
+            stream.on('end', function () {
+                res.end(); 
+            });
+
+        } else {
+            res.write(JSON.stringify(RESPONSE));
+            res.end();
+        }
+    }
 });
 
 var server_port;
@@ -146,13 +162,28 @@ describe(".pipe()", function(){
     });
 
     it("google logo", function(done){
-        var url = 'http://www.google.com.hk/images/srpr/logo11w.png';
+        var url = 'http://localhost:' + server_port + '/modified.png';
+        var write_to = node_path.join(__dirname, 'modified.png');
+
         var request = modified();
         var req = request(url);
 
-        req.pipe(node_fs.createWriteStream( 'logo.png' ));
+        req.pipe(node_fs.createWriteStream( write_to ));
         req.on('complete', function (res) {
-            done();
+            async.parallel([
+                function (done) {
+                    node_fs.stat(write_to, done);
+                },
+
+                function (done){
+                    node_fs.stat(source_png, done);
+                }
+
+            ], function (err, data) {
+                expect(err).to.equal(null);
+                expect(data[0].size).to.equal(data[1].size);
+                done();
+            });
         });
     });
 });
