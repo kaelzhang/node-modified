@@ -5,12 +5,15 @@ var modified = require('../');
 
 var node_path = require('path');
 var node_http = require('http');
+var node_fs = require('fs');
 
 var fs = require('fs-sync');
 
 var cache_file_1 = node_path.join( __dirname, '1.cache' );
 var cache_file_2 = node_path.join( __dirname, '2.cache' );
+var cache_file_3 = node_path.join( __dirname, '3.cache' );
 
+// Fake etag
 var ETAG = String( Math.random() * 1000000 );
 var RESPONSE = {
     a: 1,
@@ -54,8 +57,6 @@ try_listen(19238);
 
 describe("complex", function(){
     it("will get statusCode 200 when there's no cache", function(done){
-        fs.remove(cache_file_1);
-
         var request = modified({
             cacheMapper: function (options, callback) {
                 callback(null, cache_file_1 );
@@ -78,13 +79,15 @@ describe("complex", function(){
                 url: 'http://localhost:' + server_port
 
             }, function (err, res, body) {
-                done();
+                // done();
                 expect(res.statusCode).to.equal(304);
 
                 var json = JSON.parse(body);
                 expect(json.a).to.equal(1);
                 
                 fs.remove(cache_file_1);
+                fs.remove(cache_file_1 + '.cached-data');
+                done();
             });
             
         });
@@ -97,13 +100,19 @@ describe("complex", function(){
             }
         });
 
+        var cached_data = cache_file_2 + '.cached-data';
+
         fs.write(
             cache_file_2, 
-            modified.stringify({
+            JSON.stringify({
                 etag: ETAG
-            }, {
-                a: 3,
-                b: 4
+            })
+        );
+
+        fs.write(
+            cached_data,
+            JSON.stringify({
+                a: 3
             })
         );
 
@@ -120,33 +129,30 @@ describe("complex", function(){
             expect(json.a).to.equal(3);
 
             fs.remove(cache_file_2);
+            fs.remove(cached_data);
         });
     });
 });
 
 
-describe("static methods", function(){
-    it("modified.parse", function(){
-        var parsed = modified.parse(fs.read( node_path.join(__dirname, 'fixtures', 'document.data') ));
+describe(".pipe()", function(){
+    it("without cache", function(done){
+        var request = modified();
 
-        expect(parsed.headers.server).to.equal('nginx');
-        expect(JSON.parse(parsed.data).id).to.equal(123);
-    });
+        var req = request.request({
+            method: 'GET',
+            url: 'http://localhost:' + server_port
+        }); 
 
-    describe("modified.strinify", function(){
-        it("will stringify objects", function(){
-            var h = {a: 1};
-            var d = {b: '2'}
+        var pipe_to = node_path.join(__dirname, 'piped');
 
-            expect(modified.stringify(h, d)).to.equal('{"a":1}\n\n{"b":"2"}');
-        });
+        req.pipe(node_fs.createWriteStream( pipe_to ));
 
-        it("will remain primitive literals", function(){
-            var h = {a: 1};
-            var d = 2;
-
-            expect(modified.stringify(h, d)).to.equal('{"a":1}\n\n2');
-        });
+        req.on('complete', function () {
+            expect(fs.read(pipe_to)).to.equal('{"a":1,"b":2}');
+            fs.remove(pipe_to);
+            done();
+        })
     });
 });
 
