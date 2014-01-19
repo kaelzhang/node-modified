@@ -38,7 +38,7 @@ var s = node_http.createServer(function (req, res) {
 
         var url = node_url.parse(req.url);
 
-        if ( url.pathname === '/modified.png' ) {
+        if ( /\.png$/.test(url.pathname) ) {
             var stream = node_fs.createReadStream( source_png );
             stream.pipe(res);
 
@@ -139,29 +139,29 @@ describe("complex", function(){
 
 
 describe(".pipe()", function(){
-    it("without cache", function(done){
-        var request = modified({
-            cacheMapper: function (options, callback) {
-                callback(null, cache_file_3 );
-            }
-        });
+    // it("without cache", function(done){
+    //     var request = modified({
+    //         cacheMapper: function (options, callback) {
+    //             callback(null, cache_file_3 );
+    //         }
+    //     });
 
-        var req = request.get('http://localhost:' + server_port); 
+    //     var req = request.get('http://localhost:' + server_port); 
 
-        var pipe_to = node_path.join(__dirname, 'piped');
+    //     var pipe_to = node_path.join(__dirname, 'piped');
 
-        req.pipe(node_fs.createWriteStream( pipe_to ));
+    //     req.pipe(node_fs.createWriteStream( pipe_to ));
 
-        req.on('complete', function () {
-            expect(fs.read(pipe_to)).to.equal('{"a":1,"b":2}');
-            fs.remove(cache_file_3);
-            fs.remove(cache_file_3 + '.modified-headers.json');
-            fs.remove(pipe_to);
-            done();
-        })
-    });
+    //     req.on('complete', function () {
+    //         expect(fs.read(pipe_to)).to.equal('{"a":1,"b":2}');
+    //         fs.remove(cache_file_3);
+    //         fs.remove(cache_file_3 + '.modified-headers.json');
+    //         fs.remove(pipe_to);
+    //         done();
+    //     })
+    // });
 
-    it("google logo", function(done){
+    it("binary file", function(done){
         var url = 'http://localhost:' + server_port + '/modified.png';
         var write_to = node_path.join(__dirname, 'modified.png');
 
@@ -184,6 +184,36 @@ describe(".pipe()", function(){
                 expect(data[0].size).to.equal(data[1].size);
                 fs.remove(write_to);
                 done();
+            });
+        });
+    });
+
+    it("binary file2", function(done){
+        var url = 'http://localhost:' + server_port + '/modified_2.png';
+        var write_to = node_path.join(__dirname, 'modified_2.png');
+
+        var request = modified();
+        var req = request({
+            url: url,
+            encoding: null
+
+        }, function (err, res, body) {
+            node_fs.writeFile(write_to, body, function () {
+                async.parallel([
+                    function (done) {
+                        node_fs.stat(write_to, done);
+                    },
+
+                    function (done){
+                        node_fs.stat(source_png, done);
+                    }
+
+                ], function (err, data) {
+                    expect(err).to.equal(null);
+                    expect(data[0].size).to.equal(data[1].size);
+                    fs.remove(write_to);
+                    done();
+                });
             });
         });
     });
