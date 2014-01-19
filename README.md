@@ -21,13 +21,22 @@ If your server supports etag, or checks the `if-modified-since` header, `modifie
 
 ### Specify the cache routing
 
-`options.cacheMapper` must be specified, or there will be no cache applied.
+If `options.cacheMapper` is not specified, caches will be saved into `'~/.node_modified/'` directory by default.
+
+But you can do it yourself for better control.
 
 ```js
 var request = modified({
 	cacheMapper: function(options, callback){
 		// your code...
-		callback(err, cache_file);
+		callback(
+			null, 
+			path.join(
+				pathToSaveNpmCache,
+				url.parse(options.uri).pathname,
+				'couchdb-document.json'
+			)
+		);
 	}
 });
 
@@ -42,7 +51,9 @@ request({
 
 #### cache_file
 
-type `String` the file path of the local cache according to a specific request.
+`String` 
+
+The file path of the local cache to save response body according to a specific request. (Response headers will be saved into `cache_file + '.modified-headers.json'`)
 
 If you don't want modified to cache for a certain request, `cache_file` should be set to `null`
 
@@ -96,7 +107,7 @@ A instance of `Modified` is an [EventEmitter](http://nodejs.org/api/events.html#
 - response [`http.ServerResponse`](http://nodejs.org/api/http.html#http_class_http_serverresponse) The response object
 - body `String` The response body
 
-Emitted when all the request process is complete, after the execution of user callback.
+Emitted when all the request process is complete, after the execution of user callback (the one of `request(options, callback)`).
 
 
 ## Release History
