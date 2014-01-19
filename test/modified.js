@@ -137,7 +137,11 @@ describe("complex", function(){
 
 describe(".pipe()", function(){
     it("without cache", function(done){
-        var request = modified();
+        var request = modified({
+            cacheMapper: function (options, callback) {
+                callback(null, cache_file_3 );
+            }
+        });
 
         var req = request.request({
             method: 'GET',
@@ -150,6 +154,8 @@ describe(".pipe()", function(){
 
         req.on('complete', function () {
             expect(fs.read(pipe_to)).to.equal('{"a":1,"b":2}');
+            fs.remove(cache_file_3);
+            fs.remove(cache_file_3 + '.cached-data');
             fs.remove(pipe_to);
             done();
         })
