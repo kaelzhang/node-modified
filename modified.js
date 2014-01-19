@@ -10,32 +10,29 @@ var node_path   = require('path');
 
 var async       = require('async');
 
-
 // @param {Object} options
 function Modified (options) {
     Stream.call(this);
     options = options || {};
 
-    // you can also inherit and override 'read' and 'save' methods
-    [
-        // 'read', 
-        // 'save', 
-        'cacheMapper'
-    ].forEach(function (key) {
+    Modified.OPTIONS_LIST.forEach(function (key) {
         if ( key in options ) {
             this['_' + key] = options[key];
         }
 
     }, this);
 
-    this.options = this._defaults(options, {
-        // strict: false
-    });
+    var callback = options.callback;
+    delete options.callback;
 
-    this._pipeQueue = [];
+    this._request(options, callback);
 }
 
 util.inherits(Modified, Stream);
+
+Modified.OPTIONS_LIST = [
+    'cacheMapper'
+];
 
 
 // Accoring to [RFC 2616](http://www.ietf.org/rfc/rfc2616.txt),
@@ -47,21 +44,9 @@ var IF_NONE_MATCH = 'if-none-match';
 var IF_MODIFIED_SINCE = 'if-modified-since';
 
 
-Modified.prototype._defaults = function(options, defaults) {
-    var key;
-    for (key in defaults) {
-        if ( !(key in options) ) {
-            options[key] = defaults[key];
-        }
-    }
-
-    return options;
-};
-
-
 function NOOP () {}
 
-Modified.prototype.request = function(options, callback) {
+Modified.prototype._request = function(options, callback) {
     var self = this;
 
     function cb (err, res, body) {
