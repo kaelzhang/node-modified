@@ -72,11 +72,22 @@ With `options.cacheMapper`, you could specify the paths where the cache will be 
 
 ## Programmatical APIs
 
-### Class: modified.Modified
+```
+var request = modified(options);
+```
 
-This class is a sub-class of [Readable Stream](http://nodejs.org/api/stream.html#stream_class_stream_readable). 
+- options `Object`
+	- cacheMapper `function()` Which is described above
 
-A instance of `Modified` is an [EventEmitter](http://nodejs.org/api/events.html#events_class_events_eventemitter) with the following extra events:
+### request(options, callback)
+
+`modified(options)` returns a function which acts nearly the same as [`request`](https://npmjs.org/package/request);
+
+#### Returns
+
+`request(options, callback)` returns an instance of `modified.Modified` which is a sub-class of [Readable Stream](http://nodejs.org/api/stream.html#stream_class_stream_readable). 
+
+A instance of `Modified` is an [EventEmitter](http://nodejs.org/api/events.html#events_class_events_eventemitter) with the following extra event(s):
 
 
 #### Event: 'complete'
@@ -86,15 +97,10 @@ A instance of `Modified` is an [EventEmitter](http://nodejs.org/api/events.html#
 
 Emitted when all the request process is complete, after the execution of user callback.
 
-#### .request(options, callback)
-
-Send a request.
-
-- options `Object` The same as [`request`](https://npmjs.org/package/request)
-- callback `Function` The same as [`request`](https://npmjs.org/package/request)
-
 
 ## Release History
+
+* 2.0.0 - Completely redesigned.
 
 * 1.1.0 - Modified instances are streams now. You can use modified to fetch binary files.
 
