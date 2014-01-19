@@ -56,8 +56,10 @@ Modified.prototype._request = function(options, callback) {
     function cb (err, res, body) {
         callback && callback(err, res, body);
 
-        if ( !err ) {
+        if ( !err ) { 
             self.emit('complete', res, body);
+        } else {
+            self.emit('error', err);
         }
     }
 
@@ -130,22 +132,25 @@ Modified.prototype._sendResponseBody = function(res, file, callback) {
 
 // Save responses into cache files
 Modified.prototype._saveResponse = function(res, body, info, callback) {
-    async.parallel([
-        function (done) {
-            mkdirp(info.dir, done);
-        },
-
-        function (done) {
-            fs.writeFile(info.data_file, body, done)
-        },
-
-        function (done) {
-            fs.writeFile(info.header_file, JSON.stringify(res.headers), done)
+    mkdirp(info.dir, function (err) {
+        if ( err ) {
+            return callback(err, res, body);
         }
 
-    ], function (err) {
-        callback(err, res, body);
-    })
+        async.parallel([
+            function (done) {
+                fs.writeFile(info.data_file, body, done)
+            },
+
+            function (done) {
+                fs.writeFile(info.header_file, JSON.stringify(res.headers), done)
+            }
+
+        ], function (err) {
+            callback(err, res, body);
+        });
+    });
+    
 };
 
 
