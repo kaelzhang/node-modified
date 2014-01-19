@@ -255,7 +255,7 @@ Modified.prototype._mapCache = function(options, callback) {
 
 Modified.prototype._cacheMapper = function (options, callback) {
     // no cache by default
-    var url = node_url.parse(options.uri);
+    var url = node_url.parse(options.url || options.uri);
     var filepath = [
         '.node_modified', 
         url.protocol && url.protocol.replace(/:$/, '') || 'unknown',
