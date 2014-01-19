@@ -8,7 +8,7 @@ var request = require('request');
 
 function modified(options) {
     function req(uri, options, callback) {
-        return request.get(uri, options, callback);
+        return req.get(uri, options, callback);
     };
 
     req._options = options;
@@ -104,7 +104,7 @@ Ghost.make = function(method, mutator) {
             mutator(options);
         }
 
-        return this._request(param.uri || null, params.options, params.callback);
+        return this._request(params.uri || null, params.options, params.callback);
     };
 };
 

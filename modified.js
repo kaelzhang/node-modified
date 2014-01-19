@@ -16,10 +16,10 @@ function Modified (options) {
     options = options || {};
 
     Modified.OPTIONS_LIST.forEach(function (key) {
+        // So, `options[key]` could be null
         if ( key in options ) {
             this['_' + key] = options[key];
         }
-
     }, this);
 
     var callback = options.callback;
