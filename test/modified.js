@@ -182,6 +182,7 @@ describe(".pipe()", function(){
             ], function (err, data) {
                 expect(err).to.equal(null);
                 expect(data[0].size).to.equal(data[1].size);
+                fs.remove(write_to);
                 done();
             });
         });
