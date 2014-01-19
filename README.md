@@ -9,8 +9,7 @@ Modified implemented `last-modified`, `if-modified-since`, `etag`, `if-none-matc
 Modified is build upon [request](https://npmjs.org/package/request) and flavors it with cache support, so if you are familiar with request, you are almost ready to use modified.
 
 ```js
-var request = modified(options);
-// then use almost the same as request
+var request = modified(options); // Then use almost the same as request
 
 request('http://google.com/doodle.png').pipe(fs.createWriteStream('doodle.png'));
 ```
@@ -53,7 +52,11 @@ If you don't want modified to cache for a certain request, `cache_file` should b
 			// 'http://xxx.com/abc/' -> '/abc'
 			path = path.replace(/\/$/, '');
 			
-			callback(null, path.join(__dirname, 'cache', path));
+			callback(
+				null, 
+				// Where the cache should be saved.
+				path.join(__dirname, 'cache', path)
+			);
 		
 		} else {
 			callback(null, null);
@@ -63,6 +66,31 @@ If you don't want modified to cache for a certain request, `cache_file` should b
 ```
 
 With `options.cacheMapper`, you could specify the paths where the cache will be saved.
+
+
+## Programmatical APIs
+
+### Class: modified.Modified
+
+This class is a sub-class of [Readable Stream](http://nodejs.org/api/stream.html#stream_class_stream_readable). 
+
+A instance of `Modified` is an [EventEmitter](http://nodejs.org/api/events.html#events_class_events_eventemitter) with the following extra events:
+
+
+#### Event: 'complete'
+
+- response `[http.ServerResponse](http://nodejs.org/api/http.html#http_class_http_serverresponse)` The response object
+- body `String` The response body
+
+Emitted when all the request process is complete, after the execution of user callback.
+
+#### .request(options, callback)
+
+Send a request.
+
+- options `Object` The same as `[request](https://npmjs.org/package/request)`
+- callback `Function` The same as `[request](https://npmjs.org/package/request)`
+
 
 ## Release History
 
