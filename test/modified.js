@@ -63,22 +63,14 @@ describe("complex", function(){
             }
         });
 
-        request.request({
-            method: 'GET',
-            url: 'http://localhost:' + server_port
-
-        }, function (err, res, body) {
+        request('http://localhost:' + server_port, function (err, res, body) {
             // done();
             expect(res.statusCode).to.equal(200);
 
             var json = JSON.parse(body);
             expect(json.a).to.equal(1);
 
-            request.request({
-                method: 'GET',
-                url: 'http://localhost:' + server_port
-
-            }, function (err, res, body) {
+            request('http://localhost:' + server_port, function (err, res, body) {
                 // done();
                 expect(res.statusCode).to.equal(304);
 
@@ -89,7 +81,6 @@ describe("complex", function(){
                 fs.remove(cache_file_1 + '.cached-data');
                 done();
             });
-            
         });
     });
 
@@ -116,11 +107,7 @@ describe("complex", function(){
             })
         );
 
-        request.request({
-            method: 'GET',
-            url: 'http://localhost:' + server_port
-
-        }, function (err, res, body) {
+        request('http://localhost:' + server_port, function (err, res, body) {
             done();
 
             expect(res.statusCode).to.equal(304);
@@ -143,10 +130,7 @@ describe(".pipe()", function(){
             }
         });
 
-        var req = request.request({
-            method: 'GET',
-            url: 'http://localhost:' + server_port
-        }); 
+        var req = request.get('http://localhost:' + server_port); 
 
         var pipe_to = node_path.join(__dirname, 'piped');
 
