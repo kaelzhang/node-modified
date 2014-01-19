@@ -9,7 +9,7 @@ Modified implemented `last-modified`, `if-modified-since`, `etag`, `if-none-matc
 Modified is built upon [request](https://npmjs.org/package/request) and flavors it with cache support, so if you are familiar with request, you are almost ready to use modified.
 
 ```js
-var request = modified(options); // Then use almost the same as request
+var request = modified(options); // Then use it almost the same as request
 
 request('http://google.com/doodle.png').pipe(fs.createWriteStream('doodle.png'));
 ```
@@ -23,12 +23,14 @@ If your server supports etag, or checks the `if-modified-since` header, `modifie
 `options.cacheMapper` must be specified, or there will be no cache applied.
 
 ```js
-modified({
+var request = modified({
 	cacheMapper: function(options, callback){
 		// your code...
 		callback(err, cache_file);
 	}
-}).request({
+});
+
+request({
 	method: 'GET',
 	url: 'http://registry.npmjs.org/modified'
 	
