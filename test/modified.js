@@ -139,27 +139,27 @@ describe("complex", function(){
 
 
 describe(".pipe()", function(){
-    // it("without cache", function(done){
-    //     var request = modified({
-    //         cacheMapper: function (options, callback) {
-    //             callback(null, cache_file_3 );
-    //         }
-    //     });
+    it("without cache", function(done){
+        var request = modified({
+            cacheMapper: function (options, callback) {
+                callback(null, cache_file_3 );
+            }
+        });
 
-    //     var req = request.get('http://localhost:' + server_port); 
+        var req = request.get('http://localhost:' + server_port); 
 
-    //     var pipe_to = node_path.join(__dirname, 'piped');
+        var pipe_to = node_path.join(__dirname, 'piped');
 
-    //     req.pipe(node_fs.createWriteStream( pipe_to ));
+        req.pipe(node_fs.createWriteStream( pipe_to ));
 
-    //     req.on('complete', function () {
-    //         expect(fs.read(pipe_to)).to.equal('{"a":1,"b":2}');
-    //         fs.remove(cache_file_3);
-    //         fs.remove(cache_file_3 + '.modified-headers.json');
-    //         fs.remove(pipe_to);
-    //         done();
-    //     })
-    // });
+        req.on('complete', function () {
+            expect(fs.read(pipe_to)).to.equal('{"a":1,"b":2}');
+            fs.remove(cache_file_3);
+            fs.remove(cache_file_3 + '.modified-headers.json');
+            fs.remove(pipe_to);
+            done();
+        })
+    });
 
     it("binary file", function(done){
         var url = 'http://localhost:' + server_port + '/modified.png';
@@ -188,7 +188,7 @@ describe(".pipe()", function(){
         });
     });
 
-    it("binary file2", function(done){
+    it("fs.writeFile binary file", function(done){
         var url = 'http://localhost:' + server_port + '/modified_2.png';
         var write_to = node_path.join(__dirname, 'modified_2.png');
 
