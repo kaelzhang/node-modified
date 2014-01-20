@@ -1,13 +1,12 @@
 'use strict';
 
 module.exports = modified;
-modified.Modified = Modified;
 
-var Modified = require('./modified');
+var Modified = require('./lib/modified');
 var request = require('request');
 
 function modified(options) {
-    function req(uri, options, callback) {
+    function req(uri, options, callback) { 
         return req.get(uri, options, callback);
     };
 
@@ -16,6 +15,8 @@ function modified(options) {
 
     return req;
 }
+
+modified.Modified = Modified;
 
 
 // A ghost prototype to generate the real exports
