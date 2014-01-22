@@ -7,7 +7,7 @@ var request = require('request');
 
 function modified(options) {
     function req(uri, options, callback) { 
-        return req._request(uri, options, callback);
+        return req._generic(uri, options, callback);
     };
 
     req._options = options || {};
@@ -48,7 +48,7 @@ Ghost.prototype._clone = function(object) {
 Ghost.prototype.initParams = request.initParams;
 
 
-// Merge the options of modified
+// Merge the options of modified -> `Modified.OPTIONS_LIST`
 Ghost.prototype._initParams = function(uri, options, callback) {
     var opts = this.initParams(uri, options, callback);
     var opts_options = opts.options;
@@ -100,7 +100,10 @@ Ghost.prototype._request = function(uri, options, callback) {
 Ghost.make = function(method, mutator) {
     return function(uri, options, callback) {
         var params = this._initParams(uri, options, callback);
-        params.options.method = method;
+
+        if ( method ) {
+            params.options.method = method;
+        }
 
         if (mutator) {
             mutator(options);
@@ -110,6 +113,9 @@ Ghost.make = function(method, mutator) {
     };
 };
 
+
+// The generic method to send a request with default(not specified) method type.
+Ghost.prototype._generic = Ghost.make();
 
 [
     'get',
