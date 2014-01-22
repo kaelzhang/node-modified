@@ -7,7 +7,7 @@ var request = require('request');
 
 function modified(options) {
     function req(uri, options, callback) { 
-        return req.get(uri, options, callback);
+        return req._request(uri, options, callback);
     };
 
     req._options = options || {};
@@ -70,7 +70,7 @@ Ghost.prototype._request = function(uri, options, callback) {
         throw new Error('undefined is not a valid uri or options object.');
     }
 
-    if ((typeof options === 'function') && !callback) {
+    if (typeof options === 'function' && !callback) {
         callback = options;
     }
 
