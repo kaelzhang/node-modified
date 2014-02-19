@@ -219,3 +219,17 @@ describe(".pipe()", function(){
     });
 });
 
+
+// describe("pipe binary file", function(){
+//     it("should maintain headers", function(done){
+//         var request = modified();
+//         // var request = require('request');
+//         var tarball = 'https://registry.npmjs.org/modified/-/modified-2.1.9.tgz';
+//         var write_to = node_path.join(__dirname, 'modified.tgz');
+
+//         request(tarball).pipe(node_fs.createWriteStream(write_to)).on('close', function () {
+//             done();
+//         });
+//     });
+// });
+
