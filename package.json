@@ -1,6 +1,6 @@
 {
   "name": "modified",
-  "version": "2.1.11",
+  "version": "2.1.12",
   "description": "Modified is a simple request client to deal with http local caches.",
   "main": "index.js",
   "scripts": {
