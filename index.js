@@ -6,14 +6,14 @@ var Modified = require('./lib/modified');
 var request = require('request');
 
 function modified(options) {
-    function req(uri, options, callback) { 
-        return req._generic(uri, options, callback);
-    };
+  function req(uri, options, callback) {
+    return req._generic(uri, options, callback);
+  };
 
-    req._options = options || {};
-    req.__proto__ = Ghost.prototype;
+  req._options = options || {};
+  req.__proto__ = Ghost.prototype;
 
-    return req;
+  return req;
 }
 
 modified.Modified = Modified;
@@ -23,25 +23,25 @@ modified.Modified = Modified;
 function Ghost(options) {}
 
 Ghost.prototype._defaults = function(options, defaults) {
-    var key;
-    for (key in defaults) {
-        if (!(key in options)) {
-            options[key] = defaults[key];
-        }
+  var key;
+  for (key in defaults) {
+    if (!(key in options)) {
+      options[key] = defaults[key];
     }
+  }
 
-    return options;
+  return options;
 };
 
 
 Ghost.prototype._clone = function(object) {
-    var key;
-    var cloned = {};
-    for (key in object) {
-        cloned[key] = object[key];
-    }
+  var key;
+  var cloned = {};
+  for (key in object) {
+    cloned[key] = object[key];
+  }
 
-    return cloned;
+  return cloned;
 };
 
 
@@ -50,67 +50,67 @@ Ghost.prototype.initParams = request.initParams;
 
 // Merge the options of modified -> `Modified.OPTIONS_LIST`
 Ghost.prototype._initParams = function(uri, options, callback) {
-    var opts = this.initParams(uri, options, callback);
-    var opts_options = opts.options;
-    var self = this;
-    var modified_options = self._options;
+  var opts = this.initParams(uri, options, callback);
+  var opts_options = opts.options;
+  var self = this;
+  var modified_options = self._options;
 
-    Modified.OPTIONS_LIST.forEach(function(key) {
-        if (!(key in opts_options) && (key in modified_options)) {
-            opts_options[key] = modified_options[key];
-        }
-    });
+  Modified.OPTIONS_LIST.forEach(function(key) {
+    if (!(key in opts_options) && (key in modified_options)) {
+      opts_options[key] = modified_options[key];
+    }
+  });
 
-    return opts;
+  return opts;
 };
 
 
 Ghost.prototype._request = function(uri, options, callback) {
-    if (typeof uri === 'undefined') {
-        throw new Error('undefined is not a valid uri or options object.');
-    }
+  if (typeof uri === 'undefined') {
+    throw new Error('undefined is not a valid uri or options object.');
+  }
 
-    if (typeof options === 'function' && !callback) {
-        callback = options;
-    }
+  if (typeof options === 'function' && !callback) {
+    callback = options;
+  }
 
-    if (options && typeof options === 'object') {
-        options.uri = uri;
+  if (options && typeof options === 'object') {
+    options.uri = uri;
 
-    } else if (typeof uri === 'string') {
-        options = {
-            uri: uri
-        };
+  } else if (typeof uri === 'string') {
+    options = {
+      uri: uri
+    };
 
-    } else {
-        options = uri;
-    }
+  } else {
+    options = uri;
+  }
 
-    options = this._clone(options);
+  options = this._clone(options);
 
-    if (callback) {
-        options.callback = callback;
-    }
+  if (callback) {
+    options.callback = callback;
+  }
 
-    var m = new Modified(options);
-    return m;
+  var m = new Modified(options);
+  return m;
 };
 
 
 Ghost.make = function(method, mutator) {
-    return function(uri, options, callback) {
-        var params = this._initParams(uri, options, callback);
+  return function(uri, options, callback) {
+    var params = this._initParams(uri, options, callback);
 
-        if ( method ) {
-            params.options.method = method;
-        }
+    if (method) {
+      params.options.method = method;
+    }
 
-        if (mutator) {
-            mutator(options);
-        }
+    if (mutator) {
+      mutator(options);
+    }
 
-        return this._request(params.uri || null, params.options, params.callback);
-    };
+    return this._request(params.uri || null, params.options, params.callback);
+  };
 };
 
 
@@ -118,25 +118,24 @@ Ghost.make = function(method, mutator) {
 Ghost.prototype._generic = Ghost.make();
 
 [
-    'get',
-    'post',
-    'patch',
-    'del',
-    'put'
+  'get',
+  'post',
+  'patch',
+  'del',
+  'put'
 
-].forEach(function (method) {
-    Ghost.prototype[method] = Ghost.make(method.toUpperCase());
+].forEach(function(method) {
+  Ghost.prototype[method] = Ghost.make(method.toUpperCase());
 });
 
 
 Ghost.prototype.head = Ghost.make('HEAD', function(options) {
-    if (
-        params.options.body ||
-        params.options.requestBodyStream ||
-        params.options.json && typeof params.options.json !== 'boolean' ||
-        params.options.multipart
-    ) {
-        throw new Error("HTTP HEAD requests MUST NOT include a request body.")
-    }
+  if (
+    params.options.body ||
+    params.options.requestBodyStream ||
+    params.options.json && typeof params.options.json !== 'boolean' ||
+    params.options.multipart
+  ) {
+    throw new Error("HTTP HEAD requests MUST NOT include a request body.")
+  }
 });
-
