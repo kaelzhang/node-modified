@@ -1,4 +1,8 @@
-# modified [![NPM version](https://badge.fury.io/js/modified.png)](http://badge.fury.io/js/modified) [![Build Status](https://travis-ci.org/kaelzhang/node-modified.png?branch=master)](https://travis-ci.org/kaelzhang/node-modified) [![Dependency Status](https://gemnasium.com/kaelzhang/node-modified.png)](https://gemnasium.com/kaelzhang/node-modified)
+[![NPM version](https://badge.fury.io/js/modified.png)](http://badge.fury.io/js/modified)
+[![Build Status](https://travis-ci.org/kaelzhang/node-modified.png?branch=master)](https://travis-ci.org/kaelzhang/node-modified)
+[![Dependency Status](https://gemnasium.com/kaelzhang/node-modified.png)](https://gemnasium.com/kaelzhang/node-modified)
+
+# modified
 
 Modified is a simple request client to deal with http local cache. 
 
@@ -15,81 +19,42 @@ var request = modified(options); // Then use it almost the same as request
 request('http://google.com/doodle.png').pipe(fs.createWriteStream('doodle.png'));
 ```
 
-## Usage
+## Using `modified` with cache
 
 If your server supports etag, or checks the `if-modified-since` header, `modified` will manage the local cache for you.
 
-### Specify the cache routing
-
-If `options.cacheMapper` is not specified, caches will be saved into `'~/.node_modified/'` directory by default.
-
-But you can do it yourself for better control.
+To enable caches, `options.cache` should be specified. `modified` only has one built-in cache handler `modified.lruCache(cache_options)`.
 
 ```js
 var request = modified({
-	cacheMapper: function(options, callback){
-		// your code...
-		callback(
-			null, 
-			path.join(
-				pathToSaveNpmCache,
-				url.parse(options.uri).pathname,
-				'couchdb-document.json'
-			)
-		);
-	}
+	cache: modified.lruCache(cache_options)
 });
-
-request({
-	method: 'GET',
-	url: 'http://registry.npmjs.org/modified'
-	
-}, function(err, res, body){
-	// ...
-})
 ```
 
-#### cache_file
+See [modified-lru-cache](https://github.com/kaelzhang/modified-lru-cache) for details.
 
-`String` 
+### Available caches
 
-The file path of the local cache to save response body according to a specific request. (Response headers will be saved into `cache_file + '.modified-headers.json'`)
+- [modified-lru-cache](https://github.com/kaelzhang/modified-lru-cache)
+- [modified-hardware-cache](https://github.com/kaelzhang/modified-hardware-cache)
 
-If you don't want modified to cache for a certain request, `cache_file` should be set to `null`
+### Implement your own caches
 
-```js
-{
-	cacheMapper: function(options, callback){
-		var path = url.parse(options.url).pathname;
-		
-		if (path) {
-			// 'http://xxx.com/abc/' -> '/abc'
-			path = path.replace(/\/$/, '');
-			
-			callback(
-				null, 
-				// Where the cache should be saved.
-				path.join(__dirname, 'cache', path)
-			);
-		
-		} else {
-			callback(null, null);
-		}
-	}
-}
-```
+#### cache.read(req, callback)
 
-With `options.cacheMapper`, you could specify the paths where the cache will be saved.
+- req `http.ClientRequest`
+- callback `function(headers)`
 
+#### cache.save(req, res, callback)
+
+- res `http.ServerResponse`
+- callback `function(headers)`
 
 ## Programmatical APIs
 
-```
+```js
 var request = modified(options);
 ```
-
-- options `Object`
-	- cacheMapper `function()` Which is described above
 
 ### request(options, callback)
 
@@ -109,16 +74,26 @@ A instance of `Modified` is an [EventEmitter](http://nodejs.org/api/events.html#
 
 Emitted when all the request process is complete, after the execution of user callback (the one of `request(options, callback)`).
 
+## MIT License
 
-## Release History
+Copyright (c) 2013 Kael Zhang <i@kael.me>, contributors
+http://kael.me/
 
-* 2.0.0 - Completely redesigned.
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
 
-* 1.1.0 - Modified instances are streams now. You can use modified to fetch binary files.
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
 
-* 1.0.0 - Initial release
-
-
-
-
-
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
